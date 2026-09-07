@@ -1,0 +1,2636 @@
+<!doctype html>
+<html lang="pl" data-allow-browser="true">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="js/theme-init.js"></script>
+    <title>Panel administracyjny</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg:
+          radial-gradient(
+            900px 540px at 10% -10%,
+            rgba(248, 113, 113, 0.24),
+            transparent 65%
+          ),
+          radial-gradient(
+            720px 480px at 95% 10%,
+            rgba(190, 18, 60, 0.2),
+            transparent 60%
+          ),
+          #f8fafc;
+        --card: #ffffff;
+        --card-soft: rgba(255, 255, 255, 0.7);
+        --text: #0b1020;
+        --muted: #475569;
+        --border: rgba(15, 23, 42, 0.12);
+        --input-bg: rgba(255, 255, 255, 0.9);
+        --input-border: rgba(15, 23, 42, 0.2);
+        --primary: #b91c1c;
+        --primary-strong: #991b1b;
+        --primary-soft: rgba(185, 28, 28, 0.2);
+        --secondary: #1f2937;
+        --ghost-bg: rgba(15, 23, 42, 0.08);
+        --danger: #b42318;
+        --success: #15803d;
+        --key-bg: rgba(185, 28, 28, 0.08);
+        --key-border: rgba(185, 28, 28, 0.35);
+        --shadow: 0 28px 50px rgba(15, 23, 42, 0.12);
+        --table-border: rgba(15, 23, 42, 0.08);
+        --stat-bg: rgba(185, 28, 28, 0.08);
+        --stat-border: rgba(185, 28, 28, 0.24);
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg:
+          radial-gradient(
+            900px 540px at 15% -10%,
+            rgba(248, 113, 113, 0.2),
+            transparent 60%
+          ),
+          radial-gradient(
+            640px 420px at 90% 0%,
+            rgba(190, 18, 60, 0.16),
+            transparent 62%
+          ),
+          #0b1220;
+        --card: #0c1729;
+        --card-soft: rgba(15, 23, 42, 0.7);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --border: rgba(148, 163, 184, 0.18);
+        --input-bg: rgba(15, 23, 42, 0.9);
+        --input-border: rgba(148, 163, 184, 0.28);
+        --primary: #f87171;
+        --primary-strong: #ef4444;
+        --primary-soft: rgba(248, 113, 113, 0.22);
+        --secondary: #e2e8f0;
+        --ghost-bg: rgba(148, 163, 184, 0.16);
+        --danger: #f43f5e;
+        --success: #4ade80;
+        --key-bg: rgba(248, 113, 113, 0.14);
+        --key-border: rgba(248, 113, 113, 0.35);
+        --shadow: 0 28px 60px rgba(0, 0, 0, 0.5);
+        --table-border: rgba(148, 163, 184, 0.16);
+        --stat-bg: rgba(248, 113, 113, 0.16);
+        --stat-border: rgba(248, 113, 113, 0.4);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+        color: var(--text);
+        position: relative;
+        overflow-x: hidden;
+        padding: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        z-index: -1;
+        filter: blur(0px);
+        opacity: 0.35;
+      }
+      body::before {
+        top: -140px;
+        left: -120px;
+        background: radial-gradient(circle, var(--key-border), transparent 70%);
+      }
+      body::after {
+        bottom: -160px;
+        right: -140px;
+        background: radial-gradient(
+          circle,
+          var(--primary-soft),
+          transparent 65%
+        );
+      }
+      main {
+        max-width: 1240px;
+        margin: clamp(20px, 5vw, 36px) auto clamp(40px, 8vw, 72px);
+        padding: 0 clamp(12px, 3vw, 18px);
+        width: 100%;
+      }
+      .card {
+        background: var(--card);
+        border-radius: clamp(16px, 4vw, 22px);
+        padding: clamp(16px, 4vw, 26px);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+        animation: rise 0.45s ease;
+        width: 100%;
+        max-width: 100%;
+      }
+      h1 {
+        margin: 0 0 clamp(12px, 3vw, 16px);
+        font-size: clamp(22px, 5vw, 28px);
+        letter-spacing: 0.3px;
+        word-break: break-word;
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: clamp(18px, 4vw, 20px);
+        letter-spacing: 0.2px;
+        word-break: break-word;
+      }
+      p {
+        margin: 0 0 12px;
+        color: var(--muted);
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: clamp(10px, 2.5vw, 12px) clamp(12px, 3vw, 14px);
+        border-radius: 12px;
+        border: 1px solid var(--input-border);
+        font-size: clamp(13px, 3vw, 14px);
+        background: var(--input-bg);
+        color: var(--text);
+        transition:
+          border 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+        max-width: 100%;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-soft);
+      }
+      button {
+        padding: clamp(9px, 2.5vw, 11px) clamp(14px, 3.5vw, 18px);
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(
+          120deg,
+          var(--primary),
+          var(--primary-strong)
+        );
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.2px;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+        box-shadow: 0 12px 22px rgba(15, 23, 42, 0.18);
+        font-size: clamp(13px, 3vw, 14px);
+        white-space: nowrap;
+      }
+      button:hover {
+        transform: translateY(-1px);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      button.secondary {
+        background: var(--secondary);
+        color: #fff;
+      }
+      button.danger {
+        background: var(--danger);
+      }
+      button.ghost {
+        background: var(--ghost-bg);
+        color: var(--text);
+        box-shadow: none;
+      }
+      button:disabled {
+        opacity: 0.65;
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+      .grid.two {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        align-items: start;
+      }
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+      .reseller-grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.2fr);
+        align-items: start;
+      }
+      .reseller-form input {
+        max-width: 320px;
+      }
+      .reseller-form button {
+        max-width: 320px;
+        width: 100%;
+        justify-self: start;
+      }
+      .reseller-password {
+        width: 140px;
+      }
+      .reseller-table {
+        min-width: 320px;
+        overflow-x: auto;
+      }
+      .span-full {
+        grid-column: 1 / -1;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .panel-block {
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+      }
+      .message {
+        margin-top: 12px;
+        font-size: 13px;
+        color: var(--danger);
+      }
+      .success {
+        color: var(--success);
+      }
+      .key-box {
+        margin-top: 14px;
+        padding: 14px;
+        border-radius: 16px;
+        background: var(--key-bg);
+        border: 1px solid var(--key-border);
+      }
+      .key-value {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin: 8px 0;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(11px, 2.5vw, 13px);
+        min-width: 100%;
+      }
+      #keysPanel .table-scroll table {
+        min-width: 1100px;
+      }
+      thead {
+        background: var(--card-soft);
+      }
+      th,
+      td {
+        text-align: left;
+        padding: clamp(8px, 2vw, 10px) clamp(6px, 1.5vw, 8px);
+        border-bottom: 1px solid var(--table-border);
+        word-break: normal;
+        white-space: nowrap;
+      }
+      #keysPanel td {
+        white-space: normal;
+      }
+      #keysPanel th:nth-child(2),
+      #keysPanel td:nth-child(2) {
+        max-width: 200px;
+        word-break: break-word;
+      }
+      tbody tr:hover {
+        background: var(--card-soft);
+      }
+      th {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+      }
+      .row-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: nowrap;
+      }
+      .reseller-actions {
+        display: grid;
+        gap: 8px;
+        align-items: start;
+        justify-items: end;
+      }
+      .reseller-table table {
+        width: 100%;
+      }
+      .reseller-list {
+        table-layout: fixed;
+      }
+      .reseller-list th:nth-child(1),
+      .reseller-list td:nth-child(1) {
+        width: 26%;
+      }
+      .reseller-list th:nth-child(2),
+      .reseller-list td:nth-child(2) {
+        width: 14%;
+      }
+      .reseller-list th:nth-child(3),
+      .reseller-list td:nth-child(3) {
+        width: 14%;
+      }
+      .reseller-list th:nth-child(4),
+      .reseller-list td:nth-child(4) {
+        width: 46%;
+      }
+      .reseller-list th:last-child,
+      .reseller-list td:last-child {
+        text-align: right;
+      }
+      .reseller-table th,
+      .reseller-table td {
+        vertical-align: middle;
+      }
+      .reseller-table input[type="number"],
+      .reseller-table input[type="password"] {
+        width: 100%;
+        max-width: 220px;
+      }
+      .reseller-table .limit-input {
+        width: 30px !important;
+        max-width: 10px;
+        min-width: 10px;
+        padding: 8px 8px;
+        font-size: 13px;
+      }
+      .reseller-table .reset-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .reseller-actions button {
+        width: 120px;
+      }
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -16px;
+        padding: 0 16px;
+      }
+      .note-cell {
+        max-width: 220px;
+        word-break: break-word;
+      }
+      .radio-group {
+        display: grid;
+        gap: 8px;
+      }
+      .radio-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .radio-group.fancy .radio-row {
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--card-soft);
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          border 0.2s ease,
+          background 0.2s ease;
+      }
+      .radio-group.fancy .radio-row:hover {
+        transform: translateY(-1px);
+        border-color: var(--primary);
+      }
+      .radio-group.fancy input[type="radio"] {
+        accent-color: var(--primary);
+        width: 16px;
+        height: 16px;
+      }
+      .key-meta {
+        justify-self: end;
+        margin-left: auto;
+        margin-top: -6px;
+        transform: translateX(50px);
+        width: min(420px, 100%);
+      }
+      .limit-info {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .tools {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        position: relative;
+        left: -24px;
+      }
+      .search-input {
+        min-width: 200px;
+        flex: 1 1 auto;
+      }
+      .filter-select {
+        min-width: 160px;
+        flex: 0 0 auto;
+        max-width: 200px;
+      }
+      .tools button {
+        flex: 0 0 auto;
+      }
+      @media (max-width: 900px) {
+        .tools {
+          flex-wrap: wrap;
+        }
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        margin: 0;
+      }
+      .stats-sticky {
+        position: sticky;
+        top: 16px;
+        z-index: 5;
+        margin: 18px 0 12px;
+        padding: 12px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--card-soft);
+        backdrop-filter: blur(12px);
+        box-shadow: var(--shadow);
+      }
+      .stat-card {
+        background: var(--stat-bg);
+        border: 1px solid var(--stat-border);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .stat-value {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .theme-toggle {
+        position: fixed;
+        top: clamp(12px, 3vw, 16px);
+        right: clamp(12px, 3vw, 16px);
+        z-index: 10;
+        border: 1px solid var(--border);
+        background: var(--card);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+        transition: none;
+        font-size: clamp(11px, 2.5vw, 12px);
+      }
+      body.role-reseller #adminTabs {
+        display: none !important;
+      }
+      .tab-bar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+        position: relative;
+        z-index: 2;
+      }
+      .tab-button {
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card-soft);
+        color: var(--text);
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          border 0.2s ease,
+          background 0.2s ease;
+      }
+      .tab-button.active {
+        background: linear-gradient(
+          120deg,
+          var(--primary),
+          var(--primary-strong)
+        );
+        border-color: transparent;
+        color: #fff;
+      }
+      .tab-button:hover {
+        transform: translateY(-1px);
+      }
+      .tab-panel[hidden] {
+        display: none;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(2, 6, 23, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        backdrop-filter: blur(8px);
+      }
+      .modal-overlay[hidden] {
+        display: none;
+      }
+      .modal-card {
+        width: min(92vw, 520px);
+        background: var(--card);
+        color: var(--text);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      .modal-card input {
+        max-width: 450px;
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @media (max-width: 720px) {
+        body {
+          padding: 0;
+        }
+        body::before,
+        body::after {
+          width: 280px;
+          height: 280px;
+        }
+        .card {
+          padding: 16px;
+          border-radius: 16px;
+        }
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .header-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        .stats-sticky {
+          position: static;
+          padding: 10px;
+        }
+        .tab-bar {
+          gap: 6px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .tab-button {
+          font-size: 12px;
+          padding: 7px 12px;
+          flex-shrink: 0;
+        }
+        .tools {
+          left: 0;
+          flex-wrap: wrap;
+          width: 100%;
+          gap: 8px;
+        }
+        .search-input,
+        .filter-select {
+          min-width: 0;
+          width: 100%;
+          max-width: none;
+        }
+        .reseller-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .reseller-table .limit-input {
+          width: 64px;
+          min-width: 64px;
+          max-width: 64px;
+        }
+        .table-scroll {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          margin: 0 -16px;
+          padding: 0 16px;
+        }
+        .row-actions {
+          flex-wrap: nowrap;
+        }
+        .row-actions button {
+          font-size: 11px;
+          padding: 7px 10px;
+          white-space: nowrap;
+        }
+        .grid.two {
+          grid-template-columns: 1fr;
+        }
+        .key-meta {
+          transform: none;
+          width: 100%;
+          max-width: 100%;
+        }
+        .modal-card {
+          padding: 16px;
+          width: calc(100vw - 32px);
+        }
+        .reseller-form input,
+        .reseller-form button {
+          max-width: 100%;
+        }
+        .reseller-actions button {
+          width: 100%;
+        }
+        table {
+          font-size: 11px;
+        }
+        th,
+        td {
+          padding: 8px 6px;
+          white-space: nowrap;
+        }
+        #keysPanel td {
+          white-space: normal;
+        }
+        #keysPanel th:nth-child(2),
+        #keysPanel td:nth-child(2) {
+          max-width: 150px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        main {
+          margin: 16px auto 32px;
+          padding: 0 12px;
+        }
+        h1 {
+          font-size: 20px;
+        }
+        h2 {
+          font-size: 17px;
+        }
+        .theme-toggle {
+          top: 10px;
+          right: 10px;
+          padding: 6px 10px;
+          font-size: 11px;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        button {
+          padding: 9px 14px;
+          font-size: 13px;
+        }
+        .header-actions {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .header-actions button {
+          width: 100%;
+        }
+        .note-cell {
+          max-width: 150px;
+          font-size: 11px;
+        }
+        .reseller-list th,
+        .reseller-list td {
+          padding: 6px 4px;
+          font-size: 10px;
+        }
+        .radio-group.fancy .radio-row {
+          padding: 8px 10px;
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 360px) {
+        main {
+          padding: 0 8px;
+        }
+        .card {
+          padding: 12px;
+          border-radius: 12px;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select {
+          padding: 9px 11px;
+          font-size: 13px;
+        }
+        button {
+          padding: 8px 12px;
+          font-size: 12px;
+        }
+        h1 {
+          font-size: 18px;
+        }
+        h2 {
+          font-size: 16px;
+        }
+        table {
+          font-size: 10px;
+        }
+        th,
+        td {
+          padding: 6px 3px;
+        }
+        .tab-button {
+          font-size: 11px;
+          padding: 6px 10px;
+        }
+      }
+    </style>
+    <script src="js/theme.js" defer></script>
+  </head>
+  <body>
+    <button
+      id="themeToggle"
+      class="theme-toggle ghost"
+      type="button"
+      aria-pressed="false"
+    >
+      Tryb: Jasny
+    </button>
+    <main>
+      <section id="loginSection" class="card">
+        <h1>Panel administracyjny</h1>
+        <p>Zaloguj sie, aby zarzadzac kluczami dostepu.</p>
+        <form id="loginForm" class="grid">
+          <div>
+            <label for="loginUsername">Nazwa uzytkownika</label>
+            <input
+              id="loginUsername"
+              type="text"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div>
+            <label for="loginPassword">Haslo</label>
+            <input
+              id="loginPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <button type="submit">Zaloguj</button>
+        </form>
+        <div id="loginMessage" class="message" aria-live="polite"></div>
+      </section>
+
+      <section id="panelSection" class="card" hidden>
+        <div class="header">
+          <div>
+            <h1>Panel administracyjny</h1>
+            <p id="userInfo"></p>
+          </div>
+          <div class="header-actions">
+            <button id="openPasswordModal" class="ghost" type="button">
+              Zmien haslo
+            </button>
+            <button id="logoutButton" class="ghost" type="button">
+              Wyloguj
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Generowanie kluczy</h2>
+          <div id="limitInfo" class="limit-info"></div>
+          <form id="keyForm" class="grid two">
+            <div>
+              <label>Okres waznosci</label>
+              <div class="radio-group fancy">
+                <label class="radio-row">
+                  <input type="radio" name="expiry" value="day" checked />
+                  Dzień
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="expiry" value="month" />
+                  Miesiąc
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="expiry" value="lifetime" />
+                  Lifetime
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="expiry" value="custom" />
+                  Niestandardowy (minuty)
+                </label>
+              </div>
+            </div>
+            <div class="stack key-meta">
+              <div>
+                <label for="customMinutes">Minuty (gdy niestandardowy)</label>
+                <input
+                  id="customMinutes"
+                  type="number"
+                  min="1"
+                  placeholder="np. 90"
+                />
+              </div>
+              <div>
+                <label for="keyNote">Notatka (obowiazkowa)</label>
+                <input
+                  id="keyNote"
+                  type="text"
+                  maxlength="50"
+                  placeholder="np. 345985432041387620"
+                  required
+                />
+                <div class="hint">Notatka pojawi sie na liscie kluczy.</div>
+              </div>
+            </div>
+            <button id="generateButton" class="span-full" type="submit">
+              Generuj klucz
+            </button>
+          </form>
+          <div id="generateMessage" class="message" aria-live="polite"></div>
+          <div id="generatedKey" class="key-box" hidden>
+            <div class="hint">
+              Klucz jest widoczny tylko teraz. Skopiuj go od razu.
+            </div>
+            <div id="keyValue" class="key-value"></div>
+            <button id="copyKey" type="button">Kopiuj</button>
+            <div id="copyMessage" class="hint"></div>
+          </div>
+        </div>
+
+        <div class="stats-sticky">
+          <div class="stats-grid">
+            <div id="statAllWrap" class="stat-card">
+              <div class="stat-label">Wszystkie klucze</div>
+              <div id="statAll" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Moje klucze</div>
+              <div id="statMine" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Aktywne</div>
+              <div id="statActive" class="stat-value">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Wygasle</div>
+              <div id="statExpired" class="stat-value">0</div>
+            </div>
+            <div id="statResellerWrap" class="stat-card" hidden>
+              <div class="stat-label">Klucze resellerow</div>
+              <div id="statReseller" class="stat-value">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="adminTabs" class="tab-bar">
+          <button class="tab-button" data-tab="keys-all" type="button">
+            Wszystkie klucze
+          </button>
+          <button class="tab-button" data-tab="keys-mine" type="button">
+            Moje klucze
+          </button>
+          <button class="tab-button" data-tab="keys-resellers" type="button">
+            Klucze resellerow
+          </button>
+          <button class="tab-button" data-tab="resellers" type="button">
+            Zarzadzanie resellerami
+          </button>
+        </div>
+
+        <div id="keysPanel" class="panel-block tab-panel">
+          <div class="header">
+            <h2 id="keysHeading">Wszystkie klucze</h2>
+            <div class="tools">
+              <button id="refreshKeys" class="ghost" type="button">
+                Odswiez
+              </button>
+              <input
+                id="keySearch"
+                class="search-input"
+                type="text"
+                placeholder="Szukaj po notatce"
+              />
+              <select id="keyStatusFilter" class="filter-select">
+                <option value="all">Wszystkie</option>
+                <option value="active">Aktywne</option>
+                <option value="expired">Wygasle</option>
+                <option value="used">Uzyte</option>
+                <option value="unused">Nieuzyte</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Notatka</th>
+                  <th id="createdByHeader">Utworzyl</th>
+                  <th>Typ</th>
+                  <th>Utworzony</th>
+                  <th>Pozostalo</th>
+                  <th>Uzycie</th>
+                  <th>Status</th>
+                  <th>Akcje</th>
+                </tr>
+              </thead>
+              <tbody id="keyList"></tbody>
+            </table>
+          </div>
+          <div id="keyListMessage" class="message" aria-live="polite"></div>
+        </div>
+
+        <div id="resellerSection" class="panel-block tab-panel" hidden>
+          <h2>Resellerzy</h2>
+          <div class="reseller-grid">
+            <form id="createResellerForm" class="grid reseller-form">
+              <div>
+                <label for="resellerUsername">Nazwa uzytkownika</label>
+                <input id="resellerUsername" type="text" required />
+              </div>
+              <div>
+                <label for="resellerPassword">Haslo</label>
+                <input id="resellerPassword" type="password" required />
+              </div>
+              <div>
+                <label for="resellerLimit">Limit kluczy</label>
+                <input id="resellerLimit" type="number" min="0" value="0" />
+              </div>
+              <button type="submit">Dodaj resellera</button>
+              <div
+                id="resellerMessage"
+                class="message"
+                aria-live="polite"
+              ></div>
+            </form>
+
+            <div class="reseller-table">
+              <table class="reseller-list">
+                <thead>
+                  <tr>
+                    <th>Uzytkownik</th>
+                    <th>Limit</th>
+                    <th>Wykorzystane</th>
+                    <th>Akcje</th>
+                  </tr>
+                </thead>
+                <tbody id="resellerList"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="passwordModal" class="modal-overlay" hidden>
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2>Zmiana hasla</h2>
+              <button id="closePasswordModal" class="ghost" type="button">
+                Zamknij
+              </button>
+            </div>
+            <form id="changePasswordForm" class="grid">
+              <div>
+                <label for="currentPassword">Aktualne haslo</label>
+                <input
+                  id="currentPassword"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+              <div>
+                <label for="newPassword">Nowe haslo</label>
+                <input
+                  id="newPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                />
+                <div class="hint">Minimum 8 znakow.</div>
+              </div>
+              <button type="submit">Zmien haslo</button>
+            </form>
+            <div
+              id="changePasswordMessage"
+              class="message"
+              aria-live="polite"
+            ></div>
+          </div>
+        </div>
+
+        <div id="resellerPasswordModal" class="modal-overlay" hidden>
+          <div class="modal-card">
+            <div class="modal-header">
+              <h2 id="resellerPasswordTitle">Zmiana hasla resellera</h2>
+              <button
+                id="closeResellerPasswordModal"
+                class="ghost"
+                type="button"
+              >
+                Zamknij
+              </button>
+            </div>
+            <form id="resellerPasswordForm" class="grid">
+              <div>
+                <label for="resellerNewPassword">Nowe haslo</label>
+                <input
+                  id="resellerNewPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                />
+                <div class="hint">Minimum 8 znakow.</div>
+              </div>
+              <button type="submit">Zmien haslo</button>
+            </form>
+            <div
+              id="resellerPasswordMessage"
+              class="message"
+              aria-live="polite"
+            ></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const loginSection = document.getElementById("loginSection");
+      const loginMessage = document.getElementById("loginMessage");
+      const themeToggle = document.getElementById("themeToggle");
+
+      let panelSection = null;
+      let userInfo = null;
+      let limitInfo = null;
+      let generateMessage = null;
+      let generatedKey = null;
+      let keyValue = null;
+      let copyKey = null;
+      let copyMessage = null;
+      let keyList = null;
+      let keyListMessage = null;
+      let refreshKeys = null;
+      let keySearch = null;
+      let keyStatusFilter = null;
+      let keysHeading = null;
+      let createdByHeader = null;
+      let adminTabs = null;
+      let keysPanel = null;
+      let statAll = null;
+      let statAllWrap = null;
+      let statMine = null;
+      let statActive = null;
+      let statExpired = null;
+      let statReseller = null;
+      let statResellerWrap = null;
+      let keyNote = null;
+      let resellerSection = null;
+      let resellerList = null;
+      let resellerMessage = null;
+      let resellerPasswordModal = null;
+      let resellerPasswordForm = null;
+      let resellerPasswordMessage = null;
+      let resellerPasswordTitle = null;
+      let activeResellerId = null;
+      let openPasswordModal = null;
+      let closePasswordModal = null;
+      let passwordModal = null;
+      let changePasswordForm = null;
+      let changePasswordMessage = null;
+
+      let currentUser = null;
+      let allKeys = [];
+      let activeTab = "keys-all";
+      let panelTemplate = "";
+      let panelReady = false;
+      const LOCAL_AUTH_USERS_KEY = "adminPanelUsers";
+      const LOCAL_AUTH_SESSION_KEY = "adminPanelSessionUser";
+      const DEFAULT_LOCAL_USERS = [
+        { id: 1, username: "admin", password: "admin123", role: "admin" },
+      ];
+
+      const CLIENT_LIMITS = {
+        "POST /api/admin/login": { windowMs: 15 * 60 * 1000, max: 5 },
+        "POST /api/admin/logout": { windowMs: 60 * 1000, max: 10 },
+        "POST /api/admin/change-password": { windowMs: 15 * 60 * 1000, max: 5 },
+        "GET /api/admin/me": { windowMs: 60 * 1000, max: 30 },
+        "GET /api/admin/keys": { windowMs: 60 * 1000, max: 30 },
+        "POST /api/admin/keys": { windowMs: 60 * 1000, max: 15 },
+        "PATCH /api/admin/keys/:id": { windowMs: 60 * 1000, max: 20 },
+        "DELETE /api/admin/keys/:id": { windowMs: 60 * 1000, max: 10 },
+        "GET /api/admin/resellers": { windowMs: 60 * 1000, max: 20 },
+        "POST /api/admin/resellers": { windowMs: 5 * 60 * 1000, max: 5 },
+        "PATCH /api/admin/resellers/:id": { windowMs: 5 * 60 * 1000, max: 10 },
+        "DELETE /api/admin/resellers/:id": { windowMs: 5 * 60 * 1000, max: 5 },
+        default: { windowMs: 60 * 1000, max: 60 },
+      };
+
+      const clientBuckets = new Map();
+      const LOCAL_KEYS_STORAGE_KEY = "adminPanelKeys";
+      const SUPABASE_URL = "https://vedhiejzypkasavqsuxk.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_xFk-N6tsh2fgjkmU9ZKlsg_V0LDNdAX";
+
+      function readLocalKeys() {
+        try {
+          const raw = localStorage.getItem(LOCAL_KEYS_STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function writeLocalKeys(keys) {
+        try {
+          localStorage.setItem(LOCAL_KEYS_STORAGE_KEY, JSON.stringify(keys));
+        } catch (_) {}
+      }
+
+      async function supabaseRest(path, options = {}) {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+          method: options.method || "GET",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: options.prefer || "return=representation",
+            ...(options.headers || {}),
+          },
+          body:
+            options.body === undefined ? undefined : JSON.stringify(options.body),
+        });
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (_) {
+          data = null;
+        }
+        if (!response.ok) {
+          const msg =
+            (data && (data.message || data.error || data.code)) ||
+            `SUPABASE_HTTP_${response.status}`;
+          throw new Error(msg);
+        }
+        return data;
+      }
+
+      function randomKeyChunk() {
+        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        let out = "";
+        if (window.crypto && window.crypto.getRandomValues) {
+          const bytes = new Uint8Array(4);
+          window.crypto.getRandomValues(bytes);
+          for (let i = 0; i < bytes.length; i += 1) {
+            out += alphabet[bytes[i] % alphabet.length];
+          }
+          return out;
+        }
+        for (let i = 0; i < 4; i += 1) {
+          out += alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
+        return out;
+      }
+
+      function generateReadableKey() {
+        return `${randomKeyChunk()}-${randomKeyChunk()}-${randomKeyChunk()}-${randomKeyChunk()}`;
+      }
+
+      async function sha256Hex(text) {
+        const data = new TextEncoder().encode(String(text || ""));
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      function getExpiryDateForKeyType(keyType, customMinutes) {
+        const now = Date.now();
+        if (keyType === "lifetime") {
+          return null;
+        }
+        if (keyType === "day" || keyType === "dzien") {
+          return new Date(now + 24 * 60 * 60 * 1000).toISOString();
+        }
+        if (keyType === "month" || keyType === "miesiac") {
+          const date = new Date();
+          date.setMonth(date.getMonth() + 1);
+          return date.toISOString();
+        }
+        if (keyType === "custom") {
+          const minutes = Number(customMinutes);
+          if (!Number.isFinite(minutes) || minutes <= 0) {
+            return null;
+          }
+          return new Date(now + Math.floor(minutes) * 60 * 1000).toISOString();
+        }
+        return null;
+      }
+
+      async function handleLocalApi(url, method, options = {}) {
+        const path = String(url || "").split("?")[0];
+
+        if (path === "/api/admin/me" && method === "GET") {
+          const sessionUser = getLocalSessionUser();
+          if (!sessionUser) {
+            throw new Error("UNAUTHORIZED");
+          }
+          const users = loadLocalUsers();
+          const matched = users.find(
+            (user) =>
+              Number(user.id) === Number(sessionUser.id) ||
+              String(user.username || "").toLowerCase() ===
+                String(sessionUser.username || "").toLowerCase(),
+          );
+          if (!matched) {
+            clearLocalSession();
+            throw new Error("UNAUTHORIZED");
+          }
+          const enriched = enrichUser(matched);
+          saveLocalSession(enriched);
+          return { user: enriched };
+        }
+
+        if (path === "/api/admin/change-password" && method === "POST") {
+          const sessionUser = getLocalSessionUser();
+          if (!sessionUser) {
+            throw new Error("UNAUTHORIZED");
+          }
+          let payload = {};
+          try {
+            payload = options.body ? JSON.parse(options.body) : {};
+          } catch (_) {
+            payload = {};
+          }
+          const currentPassword = String(payload.currentPassword || "");
+          const newPassword = String(payload.newPassword || "");
+          if (newPassword.length < 8) {
+            throw new Error("INVALID_PASSWORD");
+          }
+          const users = loadLocalUsers();
+          const index = users.findIndex(
+            (user) => Number(user.id) === Number(sessionUser.id),
+          );
+          if (index < 0) {
+            throw new Error("UNAUTHORIZED");
+          }
+          if (String(users[index].password || "") !== currentPassword) {
+            throw new Error("INVALID_CREDENTIALS");
+          }
+          users[index].password = newPassword;
+          saveLocalUsers(users);
+          saveLocalSession(users[index]);
+          return { success: true };
+        }
+
+        if (path === "/api/admin/keys" && method === "GET") {
+          const rows = await supabaseRest(
+            "admin_keys?select=*&order=created_at.desc",
+            {
+              method: "GET",
+              prefer: "return=representation",
+            },
+          );
+          return { keys: Array.isArray(rows) ? rows : [] };
+        }
+
+        if (path === "/api/admin/keys" && method === "POST") {
+          let payload = {};
+          try {
+            payload = options.body ? JSON.parse(options.body) : {};
+          } catch (_) {
+            payload = {};
+          }
+          const keyType = payload.keyType || "custom";
+          const note = String(payload.note || "").trim();
+          const customMinutes = payload.customMinutes;
+          if (!currentUser) {
+            throw new Error("UNAUTHORIZED");
+          }
+          const keyPlain = generateReadableKey();
+          const keyHash = await sha256Hex(keyPlain);
+          const createdAt = new Date().toISOString();
+          const expiresAt = getExpiryDateForKeyType(keyType, customMinutes);
+          const keyEntry = {
+            note,
+            key_value: keyPlain,
+            key_type: keyType,
+            created_at: createdAt,
+            expires_at: expiresAt,
+            used_at: null,
+            revoked: false,
+            created_by: currentUser ? currentUser.id : 1,
+            created_by_username: currentUser ? currentUser.username : "admin",
+            created_by_role: currentUser ? currentUser.role : "admin",
+            key_hash: keyHash,
+          };
+          await supabaseRest("admin_keys", {
+            method: "POST",
+            body: keyEntry,
+          });
+          return { key: keyPlain };
+        }
+
+        if (path === "/api/admin/resellers" && method === "GET") {
+          return { resellers: listLocalResellers() };
+        }
+
+        if (path === "/api/admin/resellers" && method === "POST") {
+          let payload = {};
+          try {
+            payload = options.body ? JSON.parse(options.body) : {};
+          } catch (_) {
+            payload = {};
+          }
+          const username = String(payload.username || "").trim();
+          const password = String(payload.password || "");
+          const keyLimit = Math.max(0, Math.floor(Number(payload.keyLimit) || 0));
+          if (!username || password.length < 8) {
+            throw new Error("INVALID_DATA");
+          }
+          const users = loadLocalUsers();
+          const exists = users.some(
+            (user) =>
+              String(user.username || "").toLowerCase() === username.toLowerCase(),
+          );
+          if (exists) {
+            throw new Error("USERNAME_TAKEN");
+          }
+          const nextId =
+            users.reduce((maxId, user) => Math.max(maxId, Number(user.id) || 0), 0) +
+            1;
+          users.push({
+            id: nextId,
+            username,
+            password,
+            role: "reseller",
+            key_limit: keyLimit,
+          });
+          saveLocalUsers(users);
+          return { success: true };
+        }
+
+        if (path.startsWith("/api/admin/resellers/") && method === "PATCH") {
+          const resellerId = Number(path.split("/").pop());
+          let payload = {};
+          try {
+            payload = options.body ? JSON.parse(options.body) : {};
+          } catch (_) {
+            payload = {};
+          }
+          const users = loadLocalUsers();
+          const index = users.findIndex(
+            (user) =>
+              Number(user.id) === resellerId && String(user.role) === "reseller",
+          );
+          if (index < 0) {
+            throw new Error("NOT_FOUND");
+          }
+          if (Object.prototype.hasOwnProperty.call(payload, "keyLimit")) {
+            const keyLimit = Number(payload.keyLimit);
+            if (!Number.isFinite(keyLimit) || keyLimit < 0) {
+              throw new Error("INVALID_LIMIT");
+            }
+            users[index].key_limit = Math.floor(keyLimit);
+          }
+          if (Object.prototype.hasOwnProperty.call(payload, "newPassword")) {
+            const newPassword = String(payload.newPassword || "");
+            if (newPassword.length < 8) {
+              throw new Error("INVALID_PASSWORD");
+            }
+            users[index].password = newPassword;
+          }
+          if (payload.resetCount) {
+            await supabaseRest(`admin_keys?created_by=eq.${resellerId}`, {
+              method: "DELETE",
+              prefer: "return=minimal",
+            });
+          }
+          saveLocalUsers(users);
+          return { success: true, reseller: enrichUser(users[index]) };
+        }
+
+        if (path.startsWith("/api/admin/resellers/") && method === "DELETE") {
+          const resellerId = Number(path.split("/").pop());
+          const users = loadLocalUsers();
+          const filteredUsers = users.filter(
+            (user) =>
+              !(Number(user.id) === resellerId && String(user.role) === "reseller"),
+          );
+          saveLocalUsers(filteredUsers);
+          await supabaseRest(`admin_keys?created_by=eq.${resellerId}`, {
+            method: "DELETE",
+            prefer: "return=minimal",
+          });
+          return { success: true };
+        }
+
+        if (path.startsWith("/api/admin/keys/") && method === "PATCH") {
+          const id = Number(path.split("/").pop());
+          let payload = {};
+          try {
+            payload = options.body ? JSON.parse(options.body) : {};
+          } catch (_) {
+            payload = {};
+          }
+          const patch = {};
+          if (payload.resetUsage) {
+            patch.used_at = null;
+          }
+          if (typeof payload.revoked === "boolean") {
+            patch.revoked = payload.revoked;
+          }
+          const rows = await supabaseRest(`admin_keys?id=eq.${id}`, {
+            method: "PATCH",
+            body: patch,
+          });
+          return { success: true, key: Array.isArray(rows) ? rows[0] : null };
+        }
+
+        if (path.startsWith("/api/admin/keys/") && method === "DELETE") {
+          const id = Number(path.split("/").pop());
+          await supabaseRest(`admin_keys?id=eq.${id}`, {
+            method: "DELETE",
+            prefer: "return=minimal",
+          });
+          return { success: true };
+        }
+
+        throw new Error("LOCAL_API_NOT_FOUND");
+      }
+
+      async function apiFetch(url, options = {}) {
+        const method = (options.method || "GET").toUpperCase();
+        if (!checkClientRateLimit(url, method)) {
+          throw new Error("CLIENT_RATE_LIMIT");
+        }
+        if (
+          String(url).startsWith("/api/admin/") &&
+          ["GET", "POST", "PATCH", "DELETE"].includes(method)
+        ) {
+          return handleLocalApi(url, method, options);
+        }
+        const response = await fetch(url, {
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          },
+          ...options,
+        });
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (err) {
+          data = null;
+        }
+
+        if (!response.ok) {
+          const error =
+            response.status === 429
+              ? "RATE_LIMITED"
+              : data && data.error
+                ? data.error
+                : "SERVER_ERROR";
+          throw new Error(error);
+        }
+        return data;
+      }
+
+      function normalizeRatePath(pathname) {
+        return pathname.replace(/\/\d+(?=\/|$)/g, "/:id");
+      }
+
+      function checkClientRateLimit(url, method) {
+        const path = url.split("?")[0];
+        const normalized = normalizeRatePath(path);
+        const key = `${method} ${normalized}`;
+        const config = CLIENT_LIMITS[key] || CLIENT_LIMITS.default;
+        const now = Date.now();
+        let bucket = clientBuckets.get(key);
+        if (!bucket || now > bucket.resetAt) {
+          bucket = { count: 0, resetAt: now + config.windowMs };
+          clientBuckets.set(key, bucket);
+        }
+        if (bucket.count >= config.max) {
+          return false;
+        }
+        bucket.count += 1;
+        return true;
+      }
+
+      function isRateLimitError(err) {
+        return (
+          err &&
+          (err.message === "RATE_LIMITED" ||
+            err.message === "CLIENT_RATE_LIMIT")
+        );
+      }
+
+      function loadLocalUsers() {
+        try {
+          const raw = localStorage.getItem(LOCAL_AUTH_USERS_KEY);
+          if (!raw) {
+            localStorage.setItem(
+              LOCAL_AUTH_USERS_KEY,
+              JSON.stringify(DEFAULT_LOCAL_USERS),
+            );
+            return [...DEFAULT_LOCAL_USERS];
+          }
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed) || !parsed.length) {
+            return [...DEFAULT_LOCAL_USERS];
+          }
+          return parsed;
+        } catch (_) {
+          return [...DEFAULT_LOCAL_USERS];
+        }
+      }
+
+      function saveLocalUsers(users) {
+        try {
+          localStorage.setItem(LOCAL_AUTH_USERS_KEY, JSON.stringify(users || []));
+        } catch (_) {}
+      }
+
+      function getResellerUsageCount(userId) {
+        const keys = Array.isArray(allKeys) && allKeys.length ? allKeys : readLocalKeys();
+        return keys.filter((key) => Number(key.created_by) === Number(userId)).length;
+      }
+
+      function enrichUser(user) {
+        if (!user) return null;
+        const role = user.role || "reseller";
+        const keyLimit = Number.isFinite(user.key_limit)
+          ? user.key_limit
+          : Number(user.key_limit) || 0;
+        const generated = getResellerUsageCount(user.id);
+        return {
+          ...user,
+          role,
+          key_limit: role === "reseller" ? Math.max(0, keyLimit) : 0,
+          keys_generated: role === "reseller" ? Math.max(0, generated) : 0,
+        };
+      }
+
+      function listLocalResellers() {
+        return loadLocalUsers()
+          .filter((user) => user && user.role === "reseller")
+          .map((user) => enrichUser(user));
+      }
+
+      function getLocalUserForLogin(username, password) {
+        const users = loadLocalUsers();
+        const matched = users.find(
+          (user) =>
+            user &&
+            String(user.username || "").toLowerCase() ===
+              String(username || "").toLowerCase() &&
+            String(user.password || "") === String(password || ""),
+        );
+        return matched ? enrichUser(matched) : null;
+      }
+
+      function saveLocalSession(user) {
+        try {
+          if (!user) return;
+          const enriched = enrichUser(user);
+          const sessionUser = {
+            id: enriched.id,
+            username: enriched.username,
+            role: enriched.role || "admin",
+            key_limit: Number.isFinite(enriched.key_limit)
+              ? enriched.key_limit
+              : 0,
+            keys_generated: Number.isFinite(enriched.keys_generated)
+              ? enriched.keys_generated
+              : 0,
+          };
+          sessionStorage.setItem(
+            LOCAL_AUTH_SESSION_KEY,
+            JSON.stringify(sessionUser),
+          );
+        } catch (_) {}
+      }
+
+      function getLocalSessionUser() {
+        try {
+          const raw = sessionStorage.getItem(LOCAL_AUTH_SESSION_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed || !parsed.username) return null;
+          return parsed;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function clearLocalSession() {
+        try {
+          sessionStorage.removeItem(LOCAL_AUTH_SESSION_KEY);
+        } catch (_) {}
+      }
+
+      function getCurrentTheme() {
+        return document.documentElement.getAttribute("data-theme") === "dark"
+          ? "dark"
+          : "light";
+      }
+
+      function applyTheme(mode) {
+        if (window.Theme && typeof window.Theme.setMode === "function") {
+          window.Theme.setMode(mode);
+        } else {
+          try {
+            document.documentElement.setAttribute("data-theme", mode);
+            localStorage.setItem("theme-preference", mode);
+          } catch (_) {}
+        }
+        updateThemeToggle();
+      }
+
+      function updateThemeToggle() {
+        const mode = getCurrentTheme();
+        themeToggle.textContent =
+          mode === "dark" ? "Tryb: Ciemny" : "Tryb: Jasny";
+        themeToggle.setAttribute("aria-pressed", mode === "dark");
+      }
+
+      function capturePanelTemplate() {
+        const panel = document.getElementById("panelSection");
+        if (!panel) {
+          return;
+        }
+        panelTemplate = panel.outerHTML;
+        panel.remove();
+      }
+
+      function bindPanelElements() {
+        panelSection = document.getElementById("panelSection");
+        userInfo = document.getElementById("userInfo");
+        limitInfo = document.getElementById("limitInfo");
+        generateMessage = document.getElementById("generateMessage");
+        generatedKey = document.getElementById("generatedKey");
+        keyValue = document.getElementById("keyValue");
+        copyKey = document.getElementById("copyKey");
+        copyMessage = document.getElementById("copyMessage");
+        keyList = document.getElementById("keyList");
+        keyListMessage = document.getElementById("keyListMessage");
+        refreshKeys = document.getElementById("refreshKeys");
+        keySearch = document.getElementById("keySearch");
+        keyStatusFilter = document.getElementById("keyStatusFilter");
+        keysHeading = document.getElementById("keysHeading");
+        createdByHeader = document.getElementById("createdByHeader");
+        adminTabs = document.getElementById("adminTabs");
+        keysPanel = document.getElementById("keysPanel");
+        statAll = document.getElementById("statAll");
+        statAllWrap = document.getElementById("statAllWrap");
+        statMine = document.getElementById("statMine");
+        statActive = document.getElementById("statActive");
+        statExpired = document.getElementById("statExpired");
+        statReseller = document.getElementById("statReseller");
+        statResellerWrap = document.getElementById("statResellerWrap");
+        keyNote = document.getElementById("keyNote");
+        resellerSection = document.getElementById("resellerSection");
+        resellerList = document.getElementById("resellerList");
+        resellerMessage = document.getElementById("resellerMessage");
+        resellerPasswordModal = document.getElementById(
+          "resellerPasswordModal",
+        );
+        resellerPasswordForm = document.getElementById("resellerPasswordForm");
+        resellerPasswordMessage = document.getElementById(
+          "resellerPasswordMessage",
+        );
+        resellerPasswordTitle = document.getElementById(
+          "resellerPasswordTitle",
+        );
+        openPasswordModal = document.getElementById("openPasswordModal");
+        closePasswordModal = document.getElementById("closePasswordModal");
+        passwordModal = document.getElementById("passwordModal");
+        changePasswordForm = document.getElementById("changePasswordForm");
+        changePasswordMessage = document.getElementById(
+          "changePasswordMessage",
+        );
+      }
+
+      function removePanel() {
+        if (panelSection && panelSection.parentNode) {
+          panelSection.parentNode.removeChild(panelSection);
+        }
+        panelSection = null;
+        panelReady = false;
+      }
+
+      function ensurePanel() {
+        if (panelReady) {
+          return;
+        }
+        if (!panelTemplate) {
+          return;
+        }
+        loginSection.insertAdjacentHTML("afterend", panelTemplate);
+        bindPanelElements();
+        initPanelEvents();
+        panelReady = true;
+      }
+
+      function getKeysForTab() {
+        if (!currentUser) {
+          return [];
+        }
+        if (activeTab === "keys-mine") {
+          return allKeys.filter((key) => key.created_by === currentUser.id);
+        }
+        if (activeTab === "keys-resellers") {
+          return allKeys.filter((key) => key.created_by_role === "reseller");
+        }
+        return allKeys;
+      }
+
+      function updateTabStyles() {
+        if (!adminTabs) return;
+        const buttons = adminTabs.querySelectorAll("[data-tab]");
+        buttons.forEach((button) => {
+          const isActive = button.dataset.tab === activeTab;
+          button.classList.toggle("active", isActive);
+        });
+      }
+
+      function updateTabVisibility() {
+        if (!keysPanel || !resellerSection) {
+          return;
+        }
+        keysPanel.hidden = activeTab === "resellers";
+        resellerSection.hidden = activeTab !== "resellers";
+        if (keysHeading) {
+          if (activeTab === "keys-mine") {
+            keysHeading.textContent = "Moje klucze";
+          } else if (activeTab === "keys-resellers") {
+            keysHeading.textContent = "Klucze resellerow";
+          } else {
+            keysHeading.textContent = "Wszystkie klucze";
+          }
+        }
+        if (createdByHeader) {
+          createdByHeader.hidden = activeTab === "keys-mine";
+        }
+      }
+
+      function setActiveTab(tabId) {
+        if (
+          currentUser &&
+          currentUser.role === "reseller" &&
+          tabId !== "keys-mine"
+        ) {
+          return;
+        }
+        activeTab = tabId;
+        updateTabStyles();
+        updateTabVisibility();
+        renderKeys();
+        if (activeTab === "resellers") {
+          loadResellers();
+        }
+      }
+
+      function formatKeyType(type) {
+        if (type === "day" || type === "dzien") {
+          return "Dzień";
+        }
+        if (type === "month" || type === "miesiac") {
+          return "Miesiąc";
+        }
+        if (type === "lifetime") {
+          return "Lifetime";
+        }
+        if (type === "custom") {
+          return "Niestandardowy";
+        }
+        return "Niestandardowy";
+      }
+
+      function formatDateTime(value) {
+        if (!value) {
+          return "-";
+        }
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return "-";
+        }
+        return date.toLocaleString("pl-PL");
+      }
+
+      function getRemainingLabel(expiresAt) {
+        if (!expiresAt) {
+          return "Lifetime";
+        }
+        const expiry = new Date(expiresAt).getTime();
+        if (!Number.isFinite(expiry)) {
+          return "-";
+        }
+        const diff = expiry - Date.now();
+        if (diff <= 0) {
+          return "Wygasł";
+        }
+        const totalMinutes = Math.floor(diff / 60000);
+        const days = Math.floor(totalMinutes / (24 * 60));
+        const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+        const minutes = totalMinutes % 60;
+        if (days > 0) {
+          return `${days}d ${hours}h`;
+        }
+        if (hours > 0) {
+          return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+      }
+
+      function isExpiredKey(key) {
+        return (
+          key.expires_at && new Date(key.expires_at).getTime() <= Date.now()
+        );
+      }
+
+      function isActiveKey(key) {
+        return !key.revoked && !isExpiredKey(key);
+      }
+
+      function getUsageLabel(key) {
+        return key.used_at ? "Uzyty" : "Nieuzyty";
+      }
+
+      function getStatusLabel(key) {
+        if (key.revoked) {
+          return "Zablokowany";
+        }
+        if (isExpiredKey(key)) {
+          return "Wygasł";
+        }
+        return "Aktywny";
+      }
+
+      function updateKeyStats(keys) {
+        const isReseller = currentUser && currentUser.role === "reseller";
+        const ownKeys =
+          currentUser && currentUser.id
+            ? keys.filter((key) => key.created_by === currentUser.id)
+            : [];
+        const baseKeys = isReseller ? ownKeys : keys;
+
+        const total = baseKeys.length;
+        const mine = ownKeys.length;
+        const expired = baseKeys.filter((key) => isExpiredKey(key)).length;
+        const active = baseKeys.filter((key) => isActiveKey(key)).length;
+        const resellerCount = keys.filter(
+          (key) => key.created_by_role === "reseller",
+        ).length;
+
+        if (statAll) {
+          statAll.textContent = String(total);
+        }
+        if (statMine) {
+          statMine.textContent = String(mine);
+        }
+        if (statExpired) {
+          statExpired.textContent = String(expired);
+        }
+        if (statActive) {
+          statActive.textContent = String(active);
+        }
+        if (statAllWrap) {
+          statAllWrap.hidden = isReseller;
+        }
+        if (currentUser && currentUser.role === "admin") {
+          if (statReseller) {
+            statReseller.textContent = String(resellerCount);
+          }
+          if (statResellerWrap) {
+            statResellerWrap.hidden = false;
+          }
+        } else if (statResellerWrap) {
+          statResellerWrap.hidden = true;
+        }
+      }
+
+      function renderKeys() {
+        keyList.innerHTML = "";
+        keyListMessage.textContent = "";
+        const query = keySearch.value.trim().toLowerCase();
+        const statusFilter = keyStatusFilter ? keyStatusFilter.value : "all";
+        const baseKeys = getKeysForTab();
+        let filtered = query
+          ? baseKeys.filter((key) =>
+              String(key.note || "")
+                .toLowerCase()
+                .includes(query),
+            )
+          : baseKeys;
+        if (statusFilter === "active") {
+          filtered = filtered.filter((key) => isActiveKey(key));
+        } else if (statusFilter === "expired") {
+          filtered = filtered.filter((key) => isExpiredKey(key));
+        } else if (statusFilter === "used") {
+          filtered = filtered.filter((key) => key.used_at);
+        } else if (statusFilter === "unused") {
+          filtered = filtered.filter((key) => !key.used_at);
+        }
+        const showCreatedBy = activeTab !== "keys-mine";
+
+        if (!filtered.length) {
+          keyListMessage.textContent = query ? "Brak wynikow." : "Brak kluczy.";
+          return;
+        }
+
+        filtered.forEach((key) => {
+          const row = document.createElement("tr");
+
+          const idCell = document.createElement("td");
+          idCell.textContent = key.id;
+          row.appendChild(idCell);
+
+          const noteCell = document.createElement("td");
+          noteCell.className = "note-cell";
+          noteCell.textContent = key.note ? key.note : "-";
+          row.appendChild(noteCell);
+
+          if (showCreatedBy) {
+            const createdByCell = document.createElement("td");
+            createdByCell.textContent = key.created_by_username || "-";
+            row.appendChild(createdByCell);
+          }
+
+          const typeCell = document.createElement("td");
+          typeCell.textContent = formatKeyType(key.key_type);
+          row.appendChild(typeCell);
+
+          const createdCell = document.createElement("td");
+          createdCell.textContent = formatDateTime(key.created_at);
+          row.appendChild(createdCell);
+
+          const remainingCell = document.createElement("td");
+          remainingCell.textContent = getRemainingLabel(key.expires_at);
+          row.appendChild(remainingCell);
+
+          const usageCell = document.createElement("td");
+          usageCell.textContent = getUsageLabel(key);
+          row.appendChild(usageCell);
+
+          const statusCell = document.createElement("td");
+          statusCell.textContent = getStatusLabel(key);
+          row.appendChild(statusCell);
+
+          const actionCell = document.createElement("td");
+          const actionWrap = document.createElement("div");
+          actionWrap.className = "row-actions";
+
+          const resetButton = document.createElement("button");
+          resetButton.type = "button";
+          resetButton.className = "ghost";
+          resetButton.textContent = "Resetuj uzycie";
+          resetButton.disabled = !key.used_at;
+          resetButton.addEventListener("click", async () => {
+            resetButton.disabled = true;
+            try {
+              await apiFetch(`/api/admin/keys/${key.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ resetUsage: true }),
+              });
+              await loadKeys();
+            } catch (err) {
+              alert("Nie udalo sie zresetowac uzycia klucza.");
+            } finally {
+              resetButton.disabled = !key.used_at;
+            }
+          });
+
+          const toggleButton = document.createElement("button");
+          toggleButton.type = "button";
+          toggleButton.textContent = key.revoked ? "Odblokuj" : "Zablokuj";
+          toggleButton.addEventListener("click", async () => {
+            toggleButton.disabled = true;
+            try {
+              await apiFetch(`/api/admin/keys/${key.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ revoked: !key.revoked }),
+              });
+              await loadKeys();
+            } catch (err) {
+              alert("Nie udalo sie zmienic statusu klucza.");
+            } finally {
+              toggleButton.disabled = false;
+            }
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.type = "button";
+          deleteButton.className = "danger";
+          deleteButton.textContent = "Usun";
+          deleteButton.addEventListener("click", async () => {
+            if (!confirm("Usunac klucz?")) {
+              return;
+            }
+            deleteButton.disabled = true;
+            try {
+              await apiFetch(`/api/admin/keys/${key.id}`, { method: "DELETE" });
+              await loadKeys();
+            } catch (err) {
+              alert("Nie udalo sie usunac klucza.");
+            } finally {
+              deleteButton.disabled = false;
+            }
+          });
+
+          actionWrap.appendChild(resetButton);
+          actionWrap.appendChild(toggleButton);
+          actionWrap.appendChild(deleteButton);
+          actionCell.appendChild(actionWrap);
+          row.appendChild(actionCell);
+
+          keyList.appendChild(row);
+        });
+      }
+
+      async function loadKeys() {
+        keyList.innerHTML = "";
+        keyListMessage.textContent = "";
+        try {
+          const data = await apiFetch("/api/admin/keys", { method: "GET" });
+          allKeys = data.keys ? data.keys : [];
+          updateKeyStats(allKeys);
+          renderKeys();
+        } catch (err) {
+          keyListMessage.textContent = "Nie udalo sie pobrac listy kluczy.";
+        }
+      }
+
+      function showPanel(user) {
+        ensurePanel();
+        currentUser = user;
+        loginSection.hidden = true;
+        if (panelSection) {
+          panelSection.hidden = false;
+        }
+        userInfo.textContent = `Zalogowano: ${user.username} (${user.role})`;
+        if (keySearch) {
+          keySearch.value = "";
+        }
+        if (changePasswordMessage) {
+          changePasswordMessage.textContent = "";
+          changePasswordMessage.classList.remove("success");
+        }
+        if (document.body && document.body.classList) {
+          document.body.classList.remove("role-reseller");
+          if (user.role === "reseller") {
+            document.body.classList.add("role-reseller");
+          }
+        }
+        if (passwordModal) {
+          passwordModal.hidden = true;
+        }
+        if (user.role === "reseller") {
+          const remaining = Math.max(0, user.key_limit - user.keys_generated);
+          limitInfo.textContent = `Pozostaly limit: ${remaining} / ${user.key_limit}`;
+        } else {
+          limitInfo.textContent = "Admin ma nielimitowana liczbe kluczy.";
+        }
+        if (adminTabs) {
+          const buttons = adminTabs.querySelectorAll("[data-tab]");
+          buttons.forEach((button) => {
+            const tab = button.dataset.tab;
+            button.hidden = user.role !== "admin" && tab !== "keys-mine";
+          });
+          adminTabs.hidden = false;
+        }
+        activeTab = user.role === "admin" ? "keys-all" : "keys-mine";
+        updateTabStyles();
+        updateTabVisibility();
+      }
+
+      function showLogin() {
+        currentUser = null;
+        loginSection.hidden = false;
+        if (panelSection) {
+          panelSection.hidden = true;
+        }
+        if (keyList) {
+          keyList.innerHTML = "";
+        }
+        if (keyListMessage) {
+          keyListMessage.textContent = "";
+        }
+        if (keySearch) {
+          keySearch.value = "";
+        }
+        allKeys = [];
+        updateKeyStats([]);
+        if (changePasswordMessage) {
+          changePasswordMessage.textContent = "";
+          changePasswordMessage.classList.remove("success");
+        }
+        if (document.body && document.body.classList) {
+          document.body.classList.remove("role-reseller");
+        }
+        if (adminTabs) {
+          adminTabs.hidden = false;
+        }
+        if (passwordModal) {
+          passwordModal.hidden = true;
+        }
+        removePanel();
+      }
+
+      async function loadSession() {
+        try {
+          const localUser = getLocalSessionUser();
+          if (!localUser) {
+            throw new Error("NO_LOCAL_SESSION");
+          }
+          ensurePanel();
+          showPanel(localUser);
+          await loadKeys();
+          if (localUser.role === "admin") {
+            await loadResellers();
+          }
+        } catch (err) {
+          showLogin();
+        }
+      }
+
+      async function loadResellers() {
+        resellerList.innerHTML = "";
+        try {
+          const data = await apiFetch("/api/admin/resellers", {
+            method: "GET",
+          });
+          data.resellers.forEach((reseller) => {
+            const row = document.createElement("tr");
+
+            const usernameCell = document.createElement("td");
+            usernameCell.textContent = reseller.username;
+            row.appendChild(usernameCell);
+
+            const limitCell = document.createElement("td");
+            const limitInput = document.createElement("input");
+            limitInput.type = "number";
+            limitInput.min = "0";
+            limitInput.value = reseller.key_limit;
+            limitInput.className = "limit-input";
+            limitCell.appendChild(limitInput);
+            row.appendChild(limitCell);
+
+            const usedCell = document.createElement("td");
+            usedCell.textContent = reseller.keys_generated;
+            row.appendChild(usedCell);
+
+            const actionCell = document.createElement("td");
+            const actionWrap = document.createElement("div");
+            actionWrap.className = "reseller-actions";
+
+            const resetLabel = document.createElement("label");
+            resetLabel.className = "reset-label";
+            const resetCheckbox = document.createElement("input");
+            resetCheckbox.type = "checkbox";
+            resetLabel.appendChild(resetCheckbox);
+            resetLabel.appendChild(document.createTextNode("Odnow licznik"));
+
+            const passwordButton = document.createElement("button");
+            passwordButton.type = "button";
+            passwordButton.className = "ghost";
+            passwordButton.textContent = "Zmien haslo";
+            passwordButton.addEventListener("click", () => {
+              if (!resellerPasswordModal) return;
+              activeResellerId = reseller.id;
+              if (resellerPasswordTitle) {
+                resellerPasswordTitle.textContent = `Zmiana hasla: ${reseller.username}`;
+              }
+              resellerPasswordMessage.textContent = "";
+              resellerPasswordMessage.classList.remove("success");
+              const input = document.getElementById("resellerNewPassword");
+              if (input) {
+                input.value = "";
+                input.focus();
+              }
+              resellerPasswordModal.hidden = false;
+            });
+
+            const saveButton = document.createElement("button");
+            saveButton.type = "button";
+            saveButton.textContent = "Zapisz";
+            saveButton.addEventListener("click", async () => {
+              saveButton.disabled = true;
+              try {
+                const limitValue = Number.isFinite(limitInput.valueAsNumber)
+                  ? Math.max(0, Math.floor(limitInput.valueAsNumber))
+                  : Number(limitInput.value);
+                if (!Number.isFinite(limitValue) || limitValue < 0) {
+                  alert("Niepoprawny limit.");
+                  return;
+                }
+                limitInput.value = String(limitValue);
+                await apiFetch(`/api/admin/resellers/${reseller.id}`, {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    keyLimit: limitValue,
+                    resetCount: resetCheckbox.checked,
+                  }),
+                });
+                const savedLabel = saveButton.textContent;
+                saveButton.textContent = "Zapisano";
+                await new Promise((resolve) => setTimeout(resolve, 900));
+                saveButton.textContent = savedLabel;
+                await loadResellers();
+              } catch (err) {
+                alert("Nie udalo sie zapisac zmian.");
+              } finally {
+                saveButton.disabled = false;
+              }
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "danger";
+            deleteButton.textContent = "Usun";
+            deleteButton.addEventListener("click", async () => {
+              if (!confirm("Usunac resellera?")) {
+                return;
+              }
+              deleteButton.disabled = true;
+              try {
+                await apiFetch(`/api/admin/resellers/${reseller.id}`, {
+                  method: "DELETE",
+                });
+                await loadResellers();
+              } catch (err) {
+                alert("Nie udalo sie usunac resellera.");
+              } finally {
+                deleteButton.disabled = false;
+              }
+            });
+
+            actionWrap.appendChild(resetLabel);
+            actionWrap.appendChild(passwordButton);
+            actionWrap.appendChild(saveButton);
+            actionWrap.appendChild(deleteButton);
+            actionCell.appendChild(actionWrap);
+            row.appendChild(actionCell);
+
+            resellerList.appendChild(row);
+          });
+        } catch (err) {
+          resellerList.innerHTML = "";
+        }
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          loginMessage.textContent = "";
+          const username = document
+            .getElementById("loginUsername")
+            .value.trim();
+          const password = document.getElementById("loginPassword").value;
+          try {
+            const user = getLocalUserForLogin(username, password);
+            if (!user) {
+              throw new Error("INVALID_LOCAL_CREDENTIALS");
+            }
+            saveLocalSession(user);
+            ensurePanel();
+            showPanel(user);
+            await loadKeys();
+            if (user.role === "admin") {
+              await loadResellers();
+            }
+          } catch (err) {
+            loginMessage.textContent = "Niepoprawny login lub haslo.";
+          }
+        });
+
+      function initPanelEvents() {
+        if (!panelSection) {
+          return;
+        }
+
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", async () => {
+            clearLocalSession();
+            showLogin();
+          });
+
+        changePasswordForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          changePasswordMessage.textContent = "";
+          changePasswordMessage.classList.remove("success");
+          const currentPassword =
+            document.getElementById("currentPassword").value;
+          const newPassword = document.getElementById("newPassword").value;
+          if (newPassword.length < 8) {
+            changePasswordMessage.textContent = "Nowe haslo jest za krotkie.";
+            return;
+          }
+          const button = changePasswordForm.querySelector(
+            "button[type=submit]",
+          );
+          button.disabled = true;
+          try {
+            await apiFetch("/api/admin/change-password", {
+              method: "POST",
+              body: JSON.stringify({ currentPassword, newPassword }),
+            });
+            changePasswordMessage.textContent = "Haslo zostalo zmienione.";
+            changePasswordMessage.classList.add("success");
+            document.getElementById("currentPassword").value = "";
+            document.getElementById("newPassword").value = "";
+          } catch (err) {
+            changePasswordMessage.textContent = isRateLimitError(err)
+              ? "Za duzo prob. Sprobuj pozniej."
+              : "Nie udalo sie zmienic hasla.";
+          } finally {
+            button.disabled = false;
+          }
+        });
+
+        document
+          .getElementById("keyForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            generateMessage.textContent = "";
+            generateMessage.classList.remove("success");
+            copyMessage.textContent = "";
+            generatedKey.hidden = true;
+
+            const selected = document.querySelector(
+              "input[name=expiry]:checked",
+            ).value;
+            const customMinutes =
+              document.getElementById("customMinutes").value;
+            const noteValue = keyNote.value.trim();
+            if (!noteValue) {
+              generateMessage.textContent = "Notatka jest wymagana.";
+              return;
+            }
+            if (noteValue.length > 200) {
+              generateMessage.textContent =
+                "Notatka jest za dluga (max 200 znakow).";
+              return;
+            }
+            let customMinutesValue = null;
+            if (selected === "custom") {
+              const parsed = Number(customMinutes);
+              if (!Number.isFinite(parsed) || parsed <= 0) {
+                generateMessage.textContent = "Podaj poprawna liczbe minut.";
+                return;
+              }
+              customMinutesValue = parsed;
+            }
+
+            const button = document.getElementById("generateButton");
+            button.disabled = true;
+            try {
+              const data = await apiFetch("/api/admin/keys", {
+                method: "POST",
+                body: JSON.stringify({
+                  keyType: selected,
+                  customMinutes: customMinutesValue,
+                  note: noteValue,
+                }),
+              });
+              keyValue.textContent = data.key;
+              generatedKey.hidden = false;
+              generateMessage.textContent = "Klucz wygenerowany.";
+              generateMessage.classList.add("success");
+              keyNote.value = "";
+              await loadKeys();
+              if (currentUser && currentUser.role === "reseller") {
+                const refreshed = await apiFetch("/api/admin/me", {
+                  method: "GET",
+                });
+                showPanel(refreshed.user);
+              }
+            } catch (err) {
+              generateMessage.textContent = isRateLimitError(err)
+                ? "Za duzo prob. Sprobuj pozniej."
+                : "Nie udalo sie wygenerowac klucza.";
+            } finally {
+              button.disabled = false;
+            }
+          });
+
+        copyKey.addEventListener("click", async () => {
+          if (!keyValue.textContent) {
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(keyValue.textContent);
+            copyMessage.textContent = "Skopiowano do schowka.";
+          } catch (err) {
+            copyMessage.textContent = "Skopiuj recznie.";
+          }
+        });
+
+        refreshKeys.addEventListener("click", async () => {
+          await loadKeys();
+        });
+
+        keySearch.addEventListener("input", () => {
+          renderKeys();
+        });
+        if (keyStatusFilter) {
+          keyStatusFilter.addEventListener("change", () => {
+            renderKeys();
+          });
+        }
+
+        if (adminTabs) {
+          adminTabs.addEventListener("click", (event) => {
+            const button = event.target.closest("[data-tab]");
+            if (!button || button.hidden) {
+              return;
+            }
+            setActiveTab(button.dataset.tab);
+          });
+        }
+
+        function openPasswordDialog() {
+          if (!passwordModal) return;
+          passwordModal.hidden = false;
+          changePasswordMessage.textContent = "";
+          changePasswordMessage.classList.remove("success");
+          document.getElementById("currentPassword").focus();
+        }
+
+        function closePasswordDialog() {
+          if (!passwordModal) return;
+          passwordModal.hidden = true;
+        }
+
+        openPasswordModal.addEventListener("click", openPasswordDialog);
+        closePasswordModal.addEventListener("click", closePasswordDialog);
+        passwordModal.addEventListener("click", (event) => {
+          if (event.target === passwordModal) {
+            closePasswordDialog();
+          }
+        });
+
+        function closeResellerPasswordDialog() {
+          if (!resellerPasswordModal) return;
+          resellerPasswordModal.hidden = true;
+          activeResellerId = null;
+        }
+
+        const closeResellerPasswordModal = document.getElementById(
+          "closeResellerPasswordModal",
+        );
+        if (closeResellerPasswordModal) {
+          closeResellerPasswordModal.addEventListener("click", () => {
+            closeResellerPasswordDialog();
+          });
+        }
+        if (resellerPasswordModal) {
+          resellerPasswordModal.addEventListener("click", (event) => {
+            if (event.target === resellerPasswordModal) {
+              closeResellerPasswordDialog();
+            }
+          });
+        }
+        if (resellerPasswordForm) {
+          resellerPasswordForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            resellerPasswordMessage.textContent = "";
+            resellerPasswordMessage.classList.remove("success");
+            const input = document.getElementById("resellerNewPassword");
+            const newPassword = input ? input.value : "";
+            if (!activeResellerId) {
+              resellerPasswordMessage.textContent = "Nie wybrano resellera.";
+              return;
+            }
+            if (!newPassword || newPassword.length < 8) {
+              resellerPasswordMessage.textContent =
+                "Nowe haslo musi miec minimum 8 znakow.";
+              return;
+            }
+            try {
+              await apiFetch(`/api/admin/resellers/${activeResellerId}`, {
+                method: "PATCH",
+                body: JSON.stringify({ newPassword }),
+              });
+              resellerPasswordMessage.textContent = "Haslo zmienione.";
+              resellerPasswordMessage.classList.add("success");
+              await loadResellers();
+              setTimeout(closeResellerPasswordDialog, 600);
+            } catch (err) {
+              resellerPasswordMessage.textContent =
+                "Nie udalo sie zmienic hasla.";
+            }
+          });
+        }
+
+        document
+          .getElementById("createResellerForm")
+          .addEventListener("submit", async (e) => {
+            e.preventDefault();
+            resellerMessage.textContent = "";
+            resellerMessage.classList.remove("success");
+            const username = document
+              .getElementById("resellerUsername")
+              .value.trim();
+            const password = document.getElementById("resellerPassword").value;
+            const keyLimit = Number(
+              document.getElementById("resellerLimit").value,
+            );
+            if (password.length < 8) {
+              resellerMessage.textContent = "Haslo musi miec minimum 8 znakow.";
+              return;
+            }
+            try {
+              await apiFetch("/api/admin/resellers", {
+                method: "POST",
+                body: JSON.stringify({ username, password, keyLimit }),
+              });
+              document.getElementById("resellerUsername").value = "";
+              document.getElementById("resellerPassword").value = "";
+              document.getElementById("resellerLimit").value = "0";
+              resellerMessage.textContent = "Reseller dodany.";
+              resellerMessage.classList.add("success");
+              await loadResellers();
+            } catch (err) {
+              resellerMessage.textContent = isRateLimitError(err)
+                ? "Za duzo prob. Sprobuj pozniej."
+                : "Nie udalo sie dodac resellera.";
+            }
+          });
+      }
+
+      themeToggle.addEventListener("click", () => {
+        const nextMode = getCurrentTheme() === "dark" ? "light" : "dark";
+        applyTheme(nextMode);
+      });
+
+      updateThemeToggle();
+      capturePanelTemplate();
+      showLogin();
+      loadSession();
+    </script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ecd41141a19b1ac',t:'MTc3NjI4MDI2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
