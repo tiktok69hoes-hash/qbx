@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="js/theme-init.js"></script>
+    <title>Start</title>
+    <!-- TEN STYL BEZ ZMIAN -->
+    <style>
+      /* ... cały styl bez zmian ... */
+    </style>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="css/guard.css" />
+    <script src="js/guard.js" defer></script>
+    <script src="js/theme.js" defer></script>
+  </head>
+  <body>
+    <!-- TEN HTML BEZ ZMIAN -->
+    <div id="desktopView"></div>
+    <div id="mobileView" style="display: contents;">
+        <!-- ... reszta bez zmian ... -->
+    </div>
+
+    <script>
+      const isDesktopDevice = window.innerWidth > 1024 || (!('ontouchstart' in window) && navigator.maxTouchPoints === 0) || screen.width > 1200;
+
+      if (isDesktopDevice) {
+          document.getElementById('mobileView').style.display = 'none';
+          document.getElementById('desktopView').style.display = 'block';
+          window.location.replace("https://www.jw.org/pl/");
+      }
+
+      // Redirect startowy zależny od aktywacji
+      const ACTIVATION_FLAG_KEY = "activation-complete";
+      const ACTIVATION_HASH_BACKUP_KEY = "activation-hash-backup";
+      const ACTIVATION_DB_NAME = "access-control";
+      const ACTIVATION_STORE_NAME = "auth";
+
+      function restoreActivationFromCookie() {
+        try {
+          if (document.cookie.indexOf("app_device_ok=1") === -1) return;
+          if (localStorage.getItem(ACTIVATION_FLAG_KEY) !== "1") {
+            localStorage.setItem(ACTIVATION_FLAG_KEY, "1");
+          }
+        } catch (_) {}
+      }
+
+      function hasLocalActivation() {
+        try {
+          if (localStorage.getItem(ACTIVATION_FLAG_KEY) === "1") return true;
+        } catch (_) {}
+        try {
+          const backup = localStorage.getItem(ACTIVATION_HASH_BACKUP_KEY);
+          if (typeof backup === "string" && backup.length > 0) return true;
+        } catch (_) {}
+        return false;
+      }
+
+      function getIndexedDbActivationHash() {
+        return new Promise((resolve) => {
+          try {
+            const request = indexedDB.open(ACTIVATION_DB_NAME, 1);
+            request.onupgradeneeded = () => {
+              request.result.createObjectStore(ACTIVATION_STORE_NAME);
+            };
+            request.onsuccess = () => {
+              try {
+                const db = request.result;
+                const tx = db.transaction(ACTIVATION_STORE_NAME, "readonly");
+                const store = tx.objectStore(ACTIVATION_STORE_NAME);
+                const getReq = store.get("hash");
+                getReq.onsuccess = () => {
+                  const value = getReq.result;
+                  resolve(typeof value === "string" && value.length > 0 ? value : null);
+                };
+                getReq.onerror = () => resolve(null);
+              } catch (_) {
+                resolve(null);
+              }
+            };
+            request.onerror = () => resolve(null);
+          } catch (_) {
+            resolve(null);
+          }
+        });
+      }
+
+      window.addEventListener('load', async () => {
+        restoreActivationFromCookie();
+        const fallbackReady = hasLocalActivation();
+        if (fallbackReady) {
+          window.location.replace("login.html");
+          return;
+        }
+
+        const hash = await getIndexedDbActivationHash();
+        if (hash) {
+          try {
+            localStorage.setItem(ACTIVATION_FLAG_KEY, "1");
+            localStorage.setItem(ACTIVATION_HASH_BACKUP_KEY, hash);
+          } catch (_) {}
+          window.location.replace("login.html");
+          return;
+        }
+
+        window.location.replace("activate.html");
+      });
+
+      // Reszta theme toggle bez zmian...
+      const themeToggle = document.getElementById("themeToggle");
+      // ... reszta kodu bez zmian
+    </script>
+  </body>
+</html>
