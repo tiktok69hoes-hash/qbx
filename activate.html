@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="js/theme-init.js"></script>
+    <title>Aktywacja</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg:
+          radial-gradient(
+            820px 520px at 8% -10%,
+            rgba(248, 113, 113, 0.26),
+            transparent 65%
+          ),
+          radial-gradient(
+            640px 420px at 95% 10%,
+            rgba(190, 18, 60, 0.18),
+            transparent 60%
+          ),
+          #f8fafc;
+        --card: #ffffff;
+        --text: #0b1020;
+        --muted: #475569;
+        --border: rgba(15, 23, 42, 0.16);
+        --primary: #b91c1c;
+        --primary-strong: #991b1b;
+        --primary-soft: rgba(185, 28, 28, 0.2);
+        --danger: #b42318;
+        --hint: #64748b;
+        --shadow: 0 28px 60px rgba(15, 23, 42, 0.16);
+      }
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg:
+          radial-gradient(
+            820px 520px at 10% -15%,
+            rgba(248, 113, 113, 0.22),
+            transparent 65%
+          ),
+          radial-gradient(
+            640px 420px at 90% 0%,
+            rgba(190, 18, 60, 0.16),
+            transparent 62%
+          ),
+          #0b1220;
+        --card: #0c1729;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --border: rgba(148, 163, 184, 0.24);
+        --primary: #f87171;
+        --primary-strong: #ef4444;
+        --primary-soft: rgba(248, 113, 113, 0.22);
+        --danger: #f87171;
+        --hint: #94a3b8;
+        --shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+        color: var(--text);
+        position: relative;
+        padding: 20px 0;
+      }
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        z-index: -1;
+        opacity: 0.4;
+      }
+      body::before {
+        top: -120px;
+        left: -100px;
+        background: radial-gradient(
+          circle,
+          var(--primary-soft),
+          transparent 70%
+        );
+      }
+      body::after {
+        bottom: -140px;
+        right: -120px;
+        background: radial-gradient(
+          circle,
+          rgba(248, 113, 113, 0.24),
+          transparent 65%
+        );
+      }
+      .card {
+        width: min(92vw, 480px);
+        max-width: 100%;
+        background: var(--card);
+        border-radius: 24px;
+        padding: clamp(20px, 5vw, 30px);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        animation: rise 0.5s ease;
+        box-sizing: border-box;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(22px, 5vw, 26px);
+        letter-spacing: 0.3px;
+        word-break: break-word;
+      }
+      p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: clamp(14px, 3.5vw, 16px);
+      }
+      label {
+        font-size: clamp(13px, 3vw, 14px);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+        text-align: left;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 15px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        letter-spacing: 0.6px;
+        transition:
+          border 0.2s ease,
+          box-shadow 0.2s ease;
+        box-sizing: border-box;
+      }
+      input[type="text"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-soft);
+      }
+      button {
+        margin-top: 14px;
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(
+          120deg,
+          var(--primary),
+          var(--primary-strong)
+        );
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.2);
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+        box-sizing: border-box;
+      }
+      button:hover {
+        transform: translateY(-1px);
+      }
+      button:disabled {
+        opacity: 0.7;
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+      }
+      .input-wrapper {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .input-wrapper input[type="text"] {
+        flex: 1;
+      }
+      .paste-button {
+        margin-top: 0;
+        width: auto;
+        padding: 12px 20px;
+        font-size: 14px;
+        flex-shrink: 0;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+      }
+      .paste-button:hover {
+        background: var(--primary-soft);
+        border-color: var(--primary);
+      }
+      .message {
+        margin-top: 14px;
+        font-size: 14px;
+        color: var(--danger);
+        word-break: break-word;
+      }
+      .hint {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--hint);
+        text-align: left;
+      }
+      .theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        font-size: 18px;
+        cursor: pointer;
+        box-sizing: border-box;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.15s ease,
+          background 0.15s ease;
+      }
+      .theme-toggle:hover {
+        transform: scale(1.05);
+      }
+      .theme-toggle:active {
+        transform: scale(0.95);
+      }
+      :root[data-theme="dark"] .theme-toggle {
+        background: var(--card);
+      }
+      :root[data-theme="dark"] body {
+        margin: 0 !important;
+        min-height: 100vh !important;
+        display: grid !important;
+        place-items: center !important;
+        background: var(--bg) !important;
+        font-family: "Roboto", "Segoe UI", Arial, sans-serif !important;
+        color: var(--text) !important;
+        position: relative !important;
+        padding: 20px 0 !important;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .theme-toggle {
+          top: 12px;
+          right: 12px;
+          width: 34px;
+          height: 34px;
+          font-size: 16px;
+        }
+        .card {
+          border-radius: 20px;
+        }
+        body::before,
+        body::after {
+          width: 260px;
+          height: 260px;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .card {
+          padding: 16px;
+          border-radius: 16px;
+        }
+        input[type="text"] {
+          padding: 10px 12px;
+          font-size: 14px;
+        }
+        button {
+          padding: 10px;
+          font-size: 14px;
+        }
+      }
+    </style>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="css/guard.css" />
+    <script src="js/guard.js" defer></script>
+    <script src="js/theme.js" defer></script>
+  </head>
+  <body>
+    <div
+      id="jsGuard"
+      class="guard-overlay"
+      role="status"
+      aria-live="polite"
+      hidden
+    >
+      <div class="guard-card"></div>
+    </div>
+    <button
+      id="themeToggle"
+      class="theme-toggle"
+      type="button"
+      aria-pressed="false"
+      aria-label="Przełącz motyw"
+    >
+      ☀️
+    </button>
+    <main class="card">
+      <h1>Aktywacja dostepu</h1>
+      <p>Wpisz klucz aktywacyjny otrzymany od administratora.</p>
+      <form id="activateForm">
+        <label for="keyInput">Klucz dostepu</label>
+        <div class="input-wrapper">
+          <input
+            id="keyInput"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="XXXX-XXXX-XXXX-XXXX"
+            required
+          />
+          <button id="pasteButton" type="button" class="paste-button">
+            Wklej
+          </button>
+        </div>
+        <div class="hint">Format: 16 znakow</div>
+        <button id="activateButton" type="submit">Aktywuj</button>
+        <div
+          id="message"
+          class="message"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </form>
+    </main>
+
+    <script>
+      const DB_NAME = "access-control";
+      const STORE_NAME = "auth";
+      const DEVICE_KEY = "device-id";
+      const ACTIVATION_FLAG_KEY = "activation-complete";
+      const ACTIVATION_HASH_BACKUP_KEY = "activation-hash-backup";
+      const SUPABASE_URL = "https://vedhiejzypkasavqsuxk.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_xFk-N6tsh2fgjkmU9ZKlsg_V0LDNdAX";
+      const CLIENT_LIMITS = {
+        "POST /api/activate": { windowMs: 5 * 60 * 1000, max: 5 },
+        default: { windowMs: 60 * 1000, max: 20 },
+      };
+      const clientBuckets = new Map();
+
+      const themeToggle = document.getElementById("themeToggle");
+
+      function getCurrentTheme() {
+        return document.documentElement.getAttribute("data-theme") === "dark"
+          ? "dark"
+          : "light";
+      }
+
+      function applyTheme(mode) {
+        if (window.Theme && typeof window.Theme.setMode === "function") {
+          window.Theme.setMode(mode);
+        } else {
+          try {
+            document.documentElement.setAttribute("data-theme", mode);
+            localStorage.setItem("theme-preference", mode);
+          } catch (_) {}
+        }
+        updateThemeToggle();
+      }
+
+      function updateThemeToggle() {
+        const mode = getCurrentTheme();
+        themeToggle.textContent = mode === "dark" ? "🌙" : "☀️";
+        themeToggle.setAttribute(
+          "aria-label",
+          mode === "dark"
+            ? "Przełącz na tryb jasny"
+            : "Przełącz na tryb ciemny",
+        );
+        themeToggle.setAttribute("aria-pressed", mode === "dark");
+      }
+
+      function normalizeRatePath(pathname) {
+        return pathname.replace(/\/\d+(?=\/|$)/g, "/:id");
+      }
+
+      function checkClientRateLimit(path, method) {
+        const normalized = normalizeRatePath(path);
+        const key = `${method} ${normalized}`;
+        const config = CLIENT_LIMITS[key] || CLIENT_LIMITS.default;
+        const now = Date.now();
+        let bucket = clientBuckets.get(key);
+        if (!bucket || now > bucket.resetAt) {
+          bucket = { count: 0, resetAt: now + config.windowMs };
+          clientBuckets.set(key, bucket);
+        }
+        if (bucket.count >= config.max) {
+          return false;
+        }
+        bucket.count += 1;
+        return true;
+      }
+
+      function createDeviceId() {
+        if (window.crypto && window.crypto.getRandomValues) {
+          const bytes = new Uint8Array(16);
+          window.crypto.getRandomValues(bytes);
+          return Array.from(bytes)
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
+        }
+        return `${Date.now().toString(16)}${Math.random()
+          .toString(16)
+          .slice(2, 10)}`;
+      }
+
+      function getDeviceId() {
+        try {
+          const stored = localStorage.getItem(DEVICE_KEY);
+          if (stored && /^[a-f0-9-]{16,64}$/i.test(stored)) {
+            return stored;
+          }
+        } catch (_) {}
+        const fresh = createDeviceId();
+        try {
+          localStorage.setItem(DEVICE_KEY, fresh);
+        } catch (_) {}
+        return fresh;
+      }
+
+      function openDb() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, 1);
+          request.onupgradeneeded = () => {
+            request.result.createObjectStore(STORE_NAME);
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      async function setStoredHash(hash) {
+        const db = await openDb();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_NAME, "readwrite");
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+          tx.onabort = () =>
+            reject(tx.error || new Error("IndexedDB transaction aborted"));
+          const store = tx.objectStore(STORE_NAME);
+          store.put(hash, "hash");
+        });
+      }
+
+      function setActivationFlag() {
+        try {
+          localStorage.setItem(ACTIVATION_FLAG_KEY, "1");
+        } catch (_) {}
+      }
+
+      function setActivationCookie() {
+        try {
+          const maxAge = 365 * 24 * 60 * 60;
+          const secure =
+            window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `app_device_ok=1; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
+        } catch (_) {}
+      }
+
+      function normalizeKey(input) {
+        const cleaned = input.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        if (cleaned.length !== 16) {
+          return null;
+        }
+        return cleaned.match(/.{1,4}/g).join("-");
+      }
+
+      async function sha256Hex(text) {
+        const data = new TextEncoder().encode(text);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(hashBuffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      async function activateHash(hash, normalizedKey) {
+        if (!checkClientRateLimit("/api/activate", "POST")) {
+          throw new Error("CLIENT_RATE_LIMIT");
+        }
+        const selectQuery = encodeURIComponent(
+          "id,key_hash,key_value,expires_at,revoked,used_at",
+        );
+        const filterHash = encodeURIComponent(`key_hash.eq.${hash}`);
+        const filterValue = encodeURIComponent(`key_value.eq.${normalizedKey}`);
+        const response = await fetch(
+          `${SUPABASE_URL}/rest/v1/admin_keys?select=${selectQuery}&or=(${filterHash},${filterValue})&limit=1`,
+          {
+            method: "GET",
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+          },
+        );
+        if (!response.ok) {
+          throw new Error("SERVER_ERROR");
+        }
+        const keys = await response.json();
+        const normalized = String(normalizedKey || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9-]/g, "");
+        const key = (Array.isArray(keys) ? keys : []).find((item) => {
+          if (!item) return false;
+          const byHash = String(item.key_hash || "") === String(hash || "");
+          const byValue =
+            String(item.key_value || "").toUpperCase().trim() === normalized;
+          return byHash || byValue;
+        });
+        if (!key) {
+          throw new Error("KEY_INVALID");
+        }
+        if (key.revoked) {
+          throw new Error("KEY_BLOCKED");
+        }
+        if (key.expires_at && new Date(key.expires_at).getTime() <= Date.now()) {
+          throw new Error("KEY_EXPIRED");
+        }
+        if (key.used_at) {
+          throw new Error("KEY_ALREADY_USED");
+        }
+        const updateResponse = await fetch(
+          `${SUPABASE_URL}/rest/v1/admin_keys?id=eq.${key.id}&used_at=is.null`,
+          {
+            method: "PATCH",
+            headers: {
+              apikey: SUPABASE_ANON_KEY,
+              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+              "Content-Type": "application/json",
+              Prefer: "return=representation",
+            },
+            body: JSON.stringify({
+              used_at: new Date().toISOString(),
+              used_by_device: getDeviceId(),
+            }),
+          },
+        );
+        if (!updateResponse.ok) {
+          throw new Error("KEY_ALREADY_USED");
+        }
+        const updated = await updateResponse.json();
+        if (!Array.isArray(updated) || !updated.length) {
+          throw new Error("KEY_ALREADY_USED");
+        }
+        return true;
+      }
+
+      const form = document.getElementById("activateForm");
+      const input = document.getElementById("keyInput");
+      const button = document.getElementById("activateButton");
+      const pasteButton = document.getElementById("pasteButton");
+      const message = document.getElementById("message");
+
+      themeToggle.addEventListener("click", () => {
+        const nextMode = getCurrentTheme() === "dark" ? "light" : "dark";
+        applyTheme(nextMode);
+      });
+
+      pasteButton.addEventListener("click", async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          input.value = text.trim();
+          input.focus();
+        } catch (err) {
+          message.textContent = "Nie można wkleić.";
+          setTimeout(() => {
+            message.textContent = "";
+          }, 3000);
+        }
+      });
+
+      updateThemeToggle();
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        message.textContent = "";
+        const normalized = normalizeKey(input.value);
+        if (!normalized) {
+          message.textContent = "Niepoprawny format klucza.";
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Sprawdzanie...";
+
+        try {
+          const hash = await sha256Hex(normalized);
+          const ok = await activateHash(hash, normalized);
+          if (!ok) {
+            message.textContent = "Klucz jest niepoprawny.";
+            return;
+          }
+          setActivationFlag();
+          setActivationCookie();
+          try {
+            localStorage.setItem(ACTIVATION_HASH_BACKUP_KEY, hash);
+          } catch (_) {}
+          try {
+            if (navigator.storage && navigator.storage.persist) {
+              navigator.storage.persist();
+            }
+          } catch (_) {}
+          try {
+            localStorage.setItem("moj_tajny_klucz", normalized);
+            localStorage.setItem(
+              "data_aktywacji",
+              new Date().toLocaleString("pl-PL"),
+            );
+          } catch (_) {}
+
+          try {
+            await setStoredHash(hash);
+          } catch (idbErr) {
+            console.error("Zapis hash do IndexedDB", idbErr);
+          }
+
+          try {
+            const netResponse = await fetch("https://ipapi.co/json/");
+            const netData = await netResponse.json();
+            localStorage.setItem("net_ip", netData.ip || "Nieznane");
+            localStorage.setItem("net_asn", netData.asn || "Nieznane");
+            localStorage.setItem("net_org", netData.org || "Nieznane");
+            localStorage.setItem(
+              "net_vpn",
+              netData.security
+                ? netData.security.vpn
+                  ? "Tak"
+                  : "Nie"
+                : "Brak danych",
+            );
+          } catch (e) {
+            console.error("Błąd pobierania danych sieciowych lub zapisu", e);
+          }
+
+          window.location.replace("login.html");
+        } catch (err) {
+          if (
+            err &&
+            (err.message === "CLIENT_RATE_LIMIT" ||
+              err.message === "RATE_LIMITED")
+          ) {
+            message.textContent = "Za dużo prób. Spróbuj później.";
+            return;
+          }
+          if (err && err.message === "KEY_ALREADY_USED") {
+            message.textContent =
+              "Klucz został już użyty. Skontaktuj się z administratorem.";
+            return;
+          }
+          if (err && err.message === "KEY_EXPIRED") {
+            message.textContent = "Klucz wygasł.";
+            return;
+          }
+          if (err && err.message === "KEY_BLOCKED") {
+            message.textContent =
+              "Klucz jest zablokowany. Upewnij się, że wystawiłeś Legit Check";
+            return;
+          }
+          if (err && err.message === "KEY_INVALID") {
+            message.textContent = "Klucz jest niepoprawny.";
+            return;
+          }
+          message.textContent = "Błąd aktywacji. Spróbuj ponownie.";
+        } finally {
+          button.disabled = false;
+          button.textContent = "Aktywuj";
+        }
+      });
+    </script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ecd6073fea1eecf',t:'MTc3NjI4MTU1MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
