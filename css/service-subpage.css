@@ -1,0 +1,75 @@
+/* Wspólny nagłówek podstron usług (tytuł wyśrodkowany jak w mObywatel) */
+
+.service-subpage .service-header,
+.service-subpage .header.service-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  min-height: calc(48px + env(safe-area-inset-top));
+  position: relative;
+  background-color: var(--bg-color, var(--bg, #f4f5f8));
+  box-sizing: border-box;
+}
+
+.service-subpage .service-header .back-btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-blue, #0b51a1);
+  font-size: 17px;
+  font-weight: 400;
+  z-index: 2;
+  margin: 0;
+  padding: 8px 8px 8px 0;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.service-subpage .service-header .back-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+
+.service-subpage .service-header .header-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-main, var(--text, #131419));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.service-subpage .service-header__slot,
+.service-subpage .service-header .help-btn {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 2;
+  min-height: 24px;
+  min-width: 0;
+}
+
+.service-subpage .service-header .help-btn {
+  cursor: pointer;
+}
+
+.service-subpage .service-header .help-btn svg {
+  width: 22px;
+  height: 22px;
+  color: var(--text-secondary, #5e5e62);
+}
