@@ -66,6 +66,20 @@
       background: white;
     }
 
+    input[type="file"] {
+      padding: 10px;
+    }
+
+    .preview {
+      display: none;
+      width: 150px;
+      height: 190px;
+      object-fit: cover;
+      margin: 15px auto;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
     button {
       width: 100%;
       margin-top: 25px;
@@ -77,10 +91,6 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.9;
     }
 
     .back {
@@ -101,7 +111,7 @@
     DEMO – PROJEKT SZKOLNY
   </div>
 
-  <h1>Dane dokumentu</h1>
+  <h1>Dane dokumentu DEMO</h1>
 
   <div class="section">Dane osobowe</div>
 
@@ -155,15 +165,26 @@
   <label for="postalcode">Kod pocztowy</label>
   <input id="postalcode" type="text" placeholder="00-000">
 
+  <div class="section">Zdjęcie DEMO</div>
+
+  <label for="photo">Wybierz zdjęcie</label>
+  <input id="photo" type="file" accept="image/*">
+
+  <img id="photoPreview" class="preview" alt="Podgląd zdjęcia DEMO">
+
   <div class="section">Dokument DEMO</div>
 
   <label for="do_idSeries">Seria i numer – fikcyjne</label>
-  <input id="do_idSeries" type="text" placeholder="DEMO000000">
+  <input
+    id="do_idSeries"
+    type="text"
+    placeholder="np. XAN 482731"
+  >
 
   <label for="do_issueDate">Data wydania</label>
   <input id="do_issueDate" type="date">
 
-  <label for="do_expiryDate">Data ważności</label>
+  <label for="do_expiryDate">Termin ważności</label>
   <input id="do_expiryDate" type="date">
 
   <label for="registrationDate">Data zameldowania</label>
@@ -180,45 +201,106 @@
 </div>
 
 <script>
-  function saveData() {
 
-    const fields = [
-      "name",
-      "surname",
-      "nationality",
-      "birthDate",
-      "pesel",
-      "gender",
-      "lastName",
-      "placeOfBirth",
-      "fathername",
-      "fatherSurname",
-      "mothername",
-      "motherSurname",
-      "address",
-      "postalcode",
-      "do_idSeries",
-      "do_issueDate",
-      "do_expiryDate",
-      "registrationDate"
-    ];
+const photoInput = document.getElementById("photo");
+const photoPreview = document.getElementById("photoPreview");
 
-    fields.forEach(function(id) {
-      const element = document.getElementById(id);
+/* Podgląd zdjęcia po wybraniu */
+photoInput.addEventListener("change", function () {
 
-      if (element) {
-        localStorage.setItem(id, element.value);
-      }
-    });
+  const file = photoInput.files[0];
+
+  if (!file) {
+    photoPreview.style.display = "none";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+
+    photoPreview.src = event.target.result;
+    photoPreview.style.display = "block";
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+
+/* Zapisywanie danych */
+function saveData() {
+
+  const fields = [
+    "name",
+    "surname",
+    "nationality",
+    "birthDate",
+    "pesel",
+    "gender",
+    "lastName",
+    "placeOfBirth",
+    "fathername",
+    "fatherSurname",
+    "mothername",
+    "motherSurname",
+    "address",
+    "postalcode",
+    "do_idSeries",
+    "do_issueDate",
+    "do_expiryDate",
+    "registrationDate"
+  ];
+
+  fields.forEach(function (id) {
+
+    const element = document.getElementById(id);
+
+    if (element) {
+      localStorage.setItem(id, element.value);
+    }
+
+  });
+
+
+  /* Zapisywanie zdjęcia */
+  const file = photoInput.files[0];
+
+  if (file) {
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+
+      localStorage.setItem(
+        "profileImage",
+        event.target.result
+      );
+
+      alert("Dane DEMO i zdjęcie zostały zapisane.");
+
+      window.location.href = "dowod.html";
+
+    };
+
+    reader.readAsDataURL(file);
+
+  } else {
 
     alert("Dane DEMO zostały zapisane.");
 
     window.location.href = "dowod.html";
+
   }
 
-  document
-    .getElementById("saveButton")
-    .addEventListener("click", saveData);
+}
+
+
+document
+  .getElementById("saveButton")
+  .addEventListener("click", saveData);
+
 </script>
 
 </body>
