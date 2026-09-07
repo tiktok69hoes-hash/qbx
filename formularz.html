@@ -3,125 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEMO – Dane</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      padding: 25px;
-    }
-
-    .form {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .demo {
-      background: #fff3cd;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 25px;
-      padding: 14px;
-      border: 0;
-      border-radius: 10px;
-      background: #222;
-      color: white;
-      font-size: 16px;
-    }
-  </style>
+  <title>Formularz DEMO</title>
 </head>
 
 <body>
 
-<div class="form">
+  <h1>Formularz DEMO</h1>
 
-  <div class="demo">
-    DEMO – PROJEKT SZKOLNY
-  </div>
+  <p>Projekt szkolny – wersja demonstracyjna</p>
 
-  <h1>Dane użytkownika</h1>
-
-  <label>Imię</label>
+  <label>Imię:</label>
   <input id="name" type="text">
 
-  <label>Nazwisko</label>
+  <br><br>
+
+  <label>Nazwisko:</label>
   <input id="surname" type="text">
 
-  <label>Obywatelstwo</label>
-  <input id="nationality" type="text">
+  <br><br>
 
-  <label>Data urodzenia</label>
-  <input id="birthDate" type="date">
+  <button id="save">Zapisz</button>
 
-  <label>PESEL – przykładowy</label>
-  <input id="pesel" type="text">
+  <script>
+    document.getElementById("save").addEventListener("click", function () {
+      localStorage.setItem(
+        "name",
+        document.getElementById("name").value
+      );
 
-  <label>Płeć</label>
-  <input id="gender" type="text">
+      localStorage.setItem(
+        "surname",
+        document.getElementById("surname").value
+      );
 
-  <label>Miejsce urodzenia</label>
-  <input id="placeOfBirth" type="text">
-
-  <label>Adres</label>
-  <input id="address" type="text">
-
-  <label>Kod pocztowy</label>
-  <input id="postalcode" type="text">
-
-  <button onclick="saveData()">Zapisz dane DEMO</button>
-
-</div>
-
-<script>
-
-function saveData() {
-
-  localStorage.setItem("name", document.getElementById("name").value);
-  localStorage.setItem("surname", document.getElementById("surname").value);
-  localStorage.setItem("nationality", document.getElementById("nationality").value);
-  localStorage.setItem("birthDate", document.getElementById("birthDate").value);
-  localStorage.setItem("pesel", document.getElementById("pesel").value);
-  localStorage.setItem("gender", document.getElementById("gender").value);
-  localStorage.setItem("placeOfBirth", document.getElementById("placeOfBirth").value);
-  localStorage.setItem("address", document.getElementById("address").value);
-  localStorage.setItem("postalcode", document.getElementById("postalcode").value);
-
-  alert("Dane DEMO zostały zapisane.");
-
-  window.location.href = "dowod.html";
-}
-
-</script>
+      alert("Zapisano dane DEMO");
+    });
+  </script>
 
 </body>
 </html>
